@@ -68,9 +68,9 @@ async def job():
                 is_enable = True
                 break
         if is_enable:
-            curs.execute(f'UPDATE tplproducts SET stockcontrol=0 WHERE id={row[0]}')
+            curs.execute(f'UPDATE tblproducts SET stockcontrol=0 WHERE id={row[0]}')
         else:
-            curs.execute(f'UPDATE tplproducts SET stockcontrol=1 WHERE id={row[0]}')
+            curs.execute(f'UPDATE tblproducts SET stockcontrol=1 WHERE id={row[0]}')
 
     conn.commit()
     curs.close()
