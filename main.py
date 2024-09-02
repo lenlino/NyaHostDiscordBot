@@ -4,7 +4,7 @@ import discord
 from discord.ext import tasks
 from pydactyl import PterodactylClient
 from dotenv import load_dotenv
-import mysql.connector
+import mariadb
 
 load_dotenv()
 
@@ -34,7 +34,6 @@ async def job():
         for node in page:
             if node['attributes']['location_id'] not in location_ids:
                 continue
-            print(type(node))
             all_mem_size = node['attributes']['memory']
             all_disk_size = node['attributes']['disk']
             allocated_mem_size = node['attributes']['allocated_resources']['memory']
@@ -56,8 +55,8 @@ async def job():
     await ((await bot.get_channel(1234306814305108068).fetch_message(1234309444360343552))
            .edit(embed=embed))
 
-    conn = mysql.connector.connect(host=os.environ.get('DB_HOST', None), user=os.environ.get('DB_USER', None)
-                                   , password=os.environ.get('DB_PASS', None))
+    conn = mariadb.connect(host=os.environ.get('DB_HOST', None), user=os.environ.get('DB_USER', None)
+                                   , password=os.environ.get('DB_PASS', None), database=os.environ.get('DB_NAME', None))
     curs = conn.cursor()
     curs.execute('SELECT * FROM tblproducts WHERE gid=1')
     for row in curs.fetchall():
@@ -72,6 +71,10 @@ async def job():
             curs.execute(f'UPDATE tplproducts SET stockcontrol=0 WHERE id={row[0]}')
         else:
             curs.execute(f'UPDATE tplproducts SET stockcontrol=1 WHERE id={row[0]}')
+
+    conn.commit()
+    curs.close()
+    conn.close()
 
 
 
